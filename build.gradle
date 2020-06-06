@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
+}
+
+version '1.0-SNAPSHOT'
+
+allprojects {
+    apply plugin: 'java'
+
+    group 'ru.otus.hw'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies.ext {
+        guava = 'com.google.guava:guava:28.0-jre'
+    }
+}
