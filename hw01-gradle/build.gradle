@@ -1,0 +1,13 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
+    implementation ext.guava
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'ru.otus.hw.App'
+    }
+}
+
+tasks.build.dependsOn tasks.shadowJar
