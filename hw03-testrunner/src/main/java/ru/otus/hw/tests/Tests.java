@@ -1,4 +1,4 @@
-package ru.otus.hw;
+package ru.otus.hw.tests;
 
 import ru.otus.hw.annotations.After;
 import ru.otus.hw.annotations.Before;
@@ -7,33 +7,33 @@ import ru.otus.hw.annotations.Test;
 public class Tests {
 
   @Before
-  void firstBefore() {
+  public void firstBefore() {
     System.out.println("firstBefore");
   }
 
   @Before
-  void secondBefore() {
+  public void secondBefore() {
     System.out.println("secondBefore");
   }
 
   @Test
-  void firstTest() {
+  public void firstTest() {
     System.out.println("firstTest");
   }
 
   @Test
-  void secondTest() {
+  public void secondTest() {
     System.out.println("secondTest");
     throw new AssertionError("something is terribly wrong");
   }
 
   @After
-  void firstAfter() {
+  public void firstAfter() {
     System.out.println("firstAfter");
   }
 
   @After
-  void secondAfter() {
+  public void secondAfter() {
     System.out.println("secondAfter");
   }
 }

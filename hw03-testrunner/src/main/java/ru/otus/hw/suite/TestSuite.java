@@ -1,4 +1,4 @@
-package ru.otus.hw;
+package ru.otus.hw.suite;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import ru.otus.hw.annotations.Before;
 import ru.otus.hw.annotations.Test;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ public class TestSuite {
   private final List<Method> afterMethods;
 
   @SneakyThrows
-  static TestSuite forClass(Class<?> testsClass) {
+  public static TestSuite forClass(Class<?> testsClass) {
     var testMethods = new ArrayList<Method>();
     var beforeMethods = new ArrayList<Method>();
     var afterMethods = new ArrayList<Method>();
@@ -48,19 +49,19 @@ public class TestSuite {
   }
 
   @SneakyThrows
-  TestResults run() {
+  public TestResults run() {
     var failures = 0;
 
     for (var testMethod : testMethods) {
       var testInstance = instanceConstructor.newInstance();
 
-      for (var beforeMethod : beforeMethods) {
-        beforeMethod.invoke(testInstance);
-      }
-
       try {
+        for (var beforeMethod : beforeMethods) {
+          beforeMethod.invoke(testInstance);
+        }
         testMethod.invoke(testInstance);
-      } catch (Exception e) {
+      } catch (InvocationTargetException e) {
+        e.getTargetException().printStackTrace();
         failures++;
       }
 
@@ -73,7 +74,7 @@ public class TestSuite {
   }
 
   @Data
-  static class TestResults {
+  public static class TestResults {
     private final int passes;
     private final int failures;
 
