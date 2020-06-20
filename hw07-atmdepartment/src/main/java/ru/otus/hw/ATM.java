@@ -69,13 +69,13 @@ public class ATM {
         .sum();
   }
 
-  public ATMSnapshot createSnapshot() {
-    var result = new ATMSnapshot();
+  public Notes createSnapshot() {
+    var result = new Notes();
     cartridges.forEach(result::put);
     return result;
   }
 
-  public void restore(@NotNull ATMSnapshot snapshot) {
+  public void restore(@NotNull Notes snapshot) {
     cartridges.clear();
     snapshot.forEach(cartridges::put);
   }

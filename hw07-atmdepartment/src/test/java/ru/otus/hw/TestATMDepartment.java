@@ -1,8 +1,7 @@
+package ru.otus.hw;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.otus.hw.ATM;
-import ru.otus.hw.ATMDepartment;
-import ru.otus.hw.Note;
 
 public class TestATMDepartment {
   @Test

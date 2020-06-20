@@ -9,10 +9,10 @@ public class ATMDepartment {
   @Data
   class ATMEntry {
     final ATM atm;
-    final ATMSnapshot initialSnapshot;
+    final Notes initialSnapshot;
   }
 
-  List<ATMEntry> atmEntries = new ArrayList<>();
+  private final List<ATMEntry> atmEntries = new ArrayList<>();
 
   public void addATM(ATM atm) {
     atmEntries.add(new ATMEntry(atm, atm.createSnapshot()));
