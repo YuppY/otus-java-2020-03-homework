@@ -1,15 +1,14 @@
 package ru.otus.hw;
 
 import lombok.SneakyThrows;
+import ru.otus.hw.exceptions.NotEnoughNotes;
 
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.TreeMap;
 
 public class ATM {
-  Notes cartridges;
-
-  public ATM() {
-    cartridges = new Notes();
-  }
+  private final TreeMap<Note, Integer> cartridges =
+      new TreeMap<>(Comparator.comparingInt(Note::getValue).reversed());
 
   public void addNotes(Note note, int count) {
     if (count <= 0) {
@@ -19,8 +18,6 @@ public class ATM {
     cartridges.put(note, cartridges.getOrDefault(note, 0) + count);
   }
 
-  public static class NotEnoughNotes extends Exception {}
-
   @SneakyThrows
   public Notes getNotes(int value) {
     if (value <= 0) {
@@ -28,19 +25,17 @@ public class ATM {
     }
 
     var result = new Notes();
-    var sortedNotes =
-        cartridges.keySet().stream()
-            .sorted((a, b) -> (b.getValue() - a.getValue()))
-            .collect(Collectors.toList());
-
-    for (var note : sortedNotes) {
-      var requiredValue = value / note.getValue();
-      if (requiredValue == 0) {
+    for (var entry : cartridges.entrySet()) {
+      var note = entry.getKey();
+      var noteValue = note.getValue();
+      var cartridgeCount = entry.getValue();
+      var requiredCount = value / noteValue;
+      if (requiredCount == 0) {
         break;
       }
 
-      var count = Math.min(cartridges.get(note), requiredValue);
-      value = value - (count * note.getValue());
+      var count = Math.min(cartridgeCount, requiredCount);
+      value = value - (count * noteValue);
       result.put(note, count);
     }
 

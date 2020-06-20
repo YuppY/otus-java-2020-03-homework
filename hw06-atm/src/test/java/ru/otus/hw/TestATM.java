@@ -1,8 +1,8 @@
+package ru.otus.hw;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.otus.hw.ATM;
-import ru.otus.hw.Note;
-import ru.otus.hw.Notes;
+import ru.otus.hw.exceptions.NotEnoughNotes;
 
 public class TestATM {
   @Test
@@ -55,9 +55,7 @@ public class TestATM {
     var atm = new ATM();
     atm.addNotes(Note.N50, 1);
 
-    Assertions.assertThrows(
-            ATM.NotEnoughNotes.class,
-            () -> atm.getNotes(100));
+    Assertions.assertThrows(NotEnoughNotes.class, () -> atm.getNotes(100));
     Assertions.assertEquals(50, atm.getTotalValue());
   }
 
@@ -66,9 +64,7 @@ public class TestATM {
     var atm = new ATM();
     atm.addNotes(Note.N1000, 1);
 
-    Assertions.assertThrows(
-            ATM.NotEnoughNotes.class,
-            () -> atm.getNotes(100));
+    Assertions.assertThrows(NotEnoughNotes.class, () -> atm.getNotes(100));
     Assertions.assertEquals(1000, atm.getTotalValue());
   }
 
