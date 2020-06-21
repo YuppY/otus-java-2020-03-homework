@@ -24,6 +24,37 @@ public class TestMyJSON {
     Assertions.assertEquals(new Gson().toJson(obj), MyJSON.toJSON(obj));
   }
 
+  private static class InnerTestClass {
+    private double d1 = 53d;
+    private Double d2 = 54d;
+  }
+
+  private static class TestClass {
+    private String nullStr = null;
+    private String str = "aaaaaaaaaa";
+    private char c1 = 'b';
+    private Character c2 = 'c';
+    private final static String constStr = "ddddddddddd";
+    private transient String transientStr = "eeeeeeee";
+    private int i1 = 53;
+    private Integer i2 = 54;
+    private short i3 = 55;
+    private Short i4 = 56;
+    private long i5 = 57L;
+    private Long i6 = 58L;
+    private float f1 = 59f;
+    private Float f2 = 60f;
+
+    private InnerTestClass innerTestClass = new InnerTestClass();
+    private InnerTestClass[] innerTestClasses = new InnerTestClass[] {new InnerTestClass()};
+  }
+
+  @Test
+  void testObject() {
+    var obj = new TestClass();
+    Assertions.assertEquals(MyJSON.toJSON(obj), new Gson().toJson(obj));
+  }
+
   @Test
   void testHackBasic() {
     Assertions.assertEquals("null", MyJSON.hackishToJSON(null));
