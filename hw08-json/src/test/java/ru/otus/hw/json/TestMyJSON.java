@@ -27,6 +27,7 @@ public class TestMyJSON {
   private static class InnerTestClass {
     private double d1 = 53d;
     private Double d2 = 54d;
+    private int[] ints = {1, 2, 3, 4};
   }
 
   private static class TestClass {
@@ -34,7 +35,7 @@ public class TestMyJSON {
     private String str = "aaaaaaaaaa";
     private char c1 = 'b';
     private Character c2 = 'c';
-    private final static String constStr = "ddddddddddd";
+    private static final String constStr = "ddddddddddd";
     private transient String transientStr = "eeeeeeee";
     private int i1 = 53;
     private Integer i2 = 54;
@@ -44,6 +45,7 @@ public class TestMyJSON {
     private Long i6 = 58L;
     private float f1 = 59f;
     private Float f2 = 60f;
+    private int[] ints = {1, 2, 3, 4};
 
     private InnerTestClass innerTestClass = new InnerTestClass();
     private InnerTestClass[] innerTestClasses = new InnerTestClass[] {new InnerTestClass()};

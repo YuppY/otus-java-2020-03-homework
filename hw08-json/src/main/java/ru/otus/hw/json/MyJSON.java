@@ -3,8 +3,12 @@ package ru.otus.hw.json;
 import lombok.SneakyThrows;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonValue;
+import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,8 +19,21 @@ public class MyJSON {
     super();
   }
 
+  private static Collection<Object> arrayAsCollection(Object obj) {
+    if (obj instanceof Object[]) {
+      return Arrays.asList((Object[]) obj);
+    }
+
+    var result = new ArrayList<>();
+    var len = Array.getLength(obj);
+    for (var i = 0; i < len; i++) {
+      result.add(Array.get(obj, i));
+    }
+    return result;
+  }
+
   @SneakyThrows
-  private static JsonValue toJsonArrayValue(Collection<?> obj) {
+  private static JsonArray toJsonArrayValue(Collection<?> obj) {
     var builder = Json.createArrayBuilder();
     for (var item : obj) {
       builder = builder.add(toJsonValue(item));
@@ -25,7 +42,7 @@ public class MyJSON {
   }
 
   @SneakyThrows
-  private static JsonValue toJsonObjectValue(Object obj) {
+  private static JsonObject toJsonObjectValue(Object obj) {
     var builder = Json.createObjectBuilder();
     for (var field : obj.getClass().getDeclaredFields()) {
       if ((field.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
@@ -66,8 +83,8 @@ public class MyJSON {
       return Json.createValue(((Number) obj).longValue());
     }
 
-    if (obj instanceof Object[]) {
-      return toJsonArrayValue(Arrays.asList((Object[]) obj));
+    if (obj.getClass().isArray()) {
+      return toJsonArrayValue(arrayAsCollection(obj));
     }
 
     if (obj instanceof Collection) {
