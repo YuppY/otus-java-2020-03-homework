@@ -32,8 +32,8 @@ public class TestJdbcMapperImpl {
       pst.executeUpdate();
     }
 
-    userMapper = new JdbcMapperImpl(connection, new EntityClassMetaDataImpl(User.class));
-    accountMapper = new JdbcMapperImpl(connection, new EntityClassMetaDataImpl(Account.class));
+    userMapper = new JdbcMapperImpl<>(connection, new EntityClassMetaDataImpl<>(User.class));
+    accountMapper = new JdbcMapperImpl<>(connection, new EntityClassMetaDataImpl<>(Account.class));
   }
 
   @Test
@@ -74,11 +74,57 @@ public class TestJdbcMapperImpl {
       pst.setInt(1, 99);
       pst.setString(2, "accountname");
       pst.setString(3, "15");
+      pst.executeUpdate();
     }
     connection.commit();
 
     var account = accountMapper.findById(99);
     Assertions.assertEquals(new Account(99, "accountname", new BigDecimal("15")), account);
+  }
+
+
+  @Test
+  void testUpdateUser() {
+    var user = new User(0, "foo", 33);
+    userMapper.insert(user);
+
+    user.setName("bar");
+    userMapper.update(user);
+
+    Assertions.assertEquals(user, userMapper.findById(user.getId()));
+  }
+
+  @Test
+  void testUpdateAccount() {
+    var account = new Account(0, "foo", new BigDecimal("33"));
+    accountMapper.insert(account);
+
+    account.setType("bar");
+    accountMapper.update(account);
+
+    Assertions.assertEquals(account, accountMapper.findById(account.getNo()));
+  }
+
+  @Test
+  void testInsertOrUpdateUser() {
+    var user = new User(10, "foo", 33);
+    userMapper.insertOrUpdate(user);
+    Assertions.assertEquals(user, userMapper.findById(10));
+
+    user.setName("bar");
+    userMapper.insertOrUpdate(user);
+    Assertions.assertEquals("bar", userMapper.findById(10).getName());
+  }
+
+  @Test
+  void testInsertOrUpdateAccount() {
+    var account = new Account(10, "foo", new BigDecimal("33"));
+    accountMapper.insertOrUpdate(account);
+    Assertions.assertEquals(account, accountMapper.findById(10));
+
+    account.setType("bar");
+    accountMapper.insertOrUpdate(account);
+    Assertions.assertEquals("bar", accountMapper.findById(10).getType());
   }
 
   @AfterAll
