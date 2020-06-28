@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
+import ru.otus.hw.logannotation.annotations.Log;
 import ru.otus.hw.logannotation.interfaces.Logged;
 
 public class TestLogCalls {
@@ -28,9 +29,18 @@ public class TestLogCalls {
     logger.detachAppender(logAppender);
   }
 
+  class TestClass implements Logged {
+    @Override
+    @Log
+    public void doLoggedAction(int arg1, String arg2) {}
+
+    @Override
+    public void doNotLoggedAction(int arg1, String arg2) {}
+  }
+
   @Test
   void testDoLoggedAction() {
-    var instance = Mockito.spy(Logged.class);
+    var instance = Mockito.spy(new TestClass());
     var logged = LogCalls.wrap(instance);
 
     logged.doLoggedAction(1, "foo");
@@ -46,7 +56,7 @@ public class TestLogCalls {
 
   @Test
   void testDoNotLoggedAction() {
-    var instance = Mockito.spy(Logged.class);
+    var instance = Mockito.spy(new TestClass());
     var logged = LogCalls.wrap(instance);
 
     logged.doNotLoggedAction(2, "bar");

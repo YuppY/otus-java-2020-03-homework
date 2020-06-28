@@ -18,9 +18,10 @@ public class LogCalls {
   private LogCalls() {}
 
   public static Logged wrap(Logged instance) {
-    Set<Method> loggedMethods =
-        Stream.of(Logged.class.getDeclaredMethods())
+    Set<String> loggedMethodNames =
+        Stream.of(instance.getClass().getDeclaredMethods())
             .filter(method -> method.isAnnotationPresent(Log.class))
+            .map(Method::getName)
             .collect(Collectors.toUnmodifiableSet());
 
     return (Logged)
@@ -28,8 +29,9 @@ public class LogCalls {
             LogCalls.class.getClassLoader(),
             new Class<?>[] {Logged.class},
             (proxy, method, args) -> {
-              if (loggedMethods.contains(method)) {
-                logger.info(String.format("invoking %s with %s", method.getName(), Arrays.toString(args)));
+              var methodName = method.getName();
+              if (loggedMethodNames.contains(methodName)) {
+                logger.info(String.format("invoking %s with %s", methodName, Arrays.toString(args)));
               }
               return method.invoke(instance, args);
             });

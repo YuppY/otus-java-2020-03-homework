@@ -1,11 +1,13 @@
 package ru.otus.hw.logannotation;
 
+import ru.otus.hw.logannotation.annotations.Log;
 import ru.otus.hw.logannotation.interfaces.Logged;
 
 public class Demo {
   static class DemoClass implements Logged {
 
     @Override
+    @Log
     public void doLoggedAction(int arg1, String arg2) {
       System.out.println("loggedAction");
     }
