@@ -2,6 +2,7 @@ rootProject.name = 'otus_java_2020_03_homework'
 
 include 'hw01-gradle'
 include 'hw03-testrunner'
+include 'hw05-logannotation'
 include 'hw06-atm'
 include 'hw07-atmdepartment'
 include 'hw08-json'

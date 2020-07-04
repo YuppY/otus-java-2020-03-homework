@@ -1,0 +1,14 @@
+apply plugin: 'io.freefair.lombok'
+
+dependencies {
+    implementation 'org.jetbrains:annotations:16.0.2'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
