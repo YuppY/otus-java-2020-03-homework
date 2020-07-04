@@ -1,9 +1,9 @@
 package ru.otus.hw.logannotation;
 
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.hw.logannotation.annotations.Log;
-import ru.otus.hw.logannotation.interfaces.Logged;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -17,23 +17,26 @@ public class LogCalls {
 
   private LogCalls() {}
 
-  public static Logged wrap(Logged instance) {
+  @SneakyThrows
+  public static <T> T wrap(Class<T> interfaceClass, T instance) {
     Set<String> loggedMethodNames =
         Stream.of(instance.getClass().getDeclaredMethods())
             .filter(method -> method.isAnnotationPresent(Log.class))
             .map(Method::getName)
             .collect(Collectors.toUnmodifiableSet());
 
-    return (Logged)
+    return interfaceClass.cast(
         Proxy.newProxyInstance(
             LogCalls.class.getClassLoader(),
-            new Class<?>[] {Logged.class},
+            new Class<?>[] {interfaceClass},
             (proxy, method, args) -> {
               var methodName = method.getName();
               if (loggedMethodNames.contains(methodName)) {
-                logger.info(String.format("invoking %s with %s", methodName, Arrays.toString(args)));
+                logger.info(
+                    String.format("invoking %s with %s", methodName, Arrays.toString(args)));
               }
               return method.invoke(instance, args);
-            });
+            })
+    );
   }
 }

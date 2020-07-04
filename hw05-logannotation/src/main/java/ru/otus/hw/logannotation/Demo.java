@@ -1,11 +1,15 @@
 package ru.otus.hw.logannotation;
 
 import ru.otus.hw.logannotation.annotations.Log;
-import ru.otus.hw.logannotation.interfaces.Logged;
 
 public class Demo {
-  static class DemoClass implements Logged {
+  interface DemoInterface {
+    void doLoggedAction(int arg1, String arg2);
 
+    void doNotLoggedAction(int arg1, String arg2);
+  }
+
+  static class DemoClass implements DemoInterface {
     @Override
     @Log
     public void doLoggedAction(int arg1, String arg2) {
@@ -19,7 +23,7 @@ public class Demo {
   }
 
   public static void main(String[] args) {
-    Logged obj = LogCalls.wrap(new DemoClass());
+    DemoInterface obj = LogCalls.wrap(DemoInterface.class, new DemoClass());
     obj.doLoggedAction(1, "foo");
     obj.doNotLoggedAction(2, "bar");
   }
