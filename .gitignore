@@ -27,3 +27,4 @@ lombok.config
 /.gradle/
 /.idea/
 *.iml
+.DS_Store
