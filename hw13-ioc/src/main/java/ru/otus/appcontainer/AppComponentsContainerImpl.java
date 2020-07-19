@@ -9,12 +9,14 @@ import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
-  private final List<Object> appComponents = new ArrayList<>();
+  private final Map<Class<?>, Object> appComponentsByType = new HashMap<>();
   private final Map<String, Object> appComponentsByName = new HashMap<>();
 
   public AppComponentsContainerImpl(Class<?> initialConfigClass) {
@@ -27,57 +29,50 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     T annotation;
   }
 
+  @SneakyThrows({IllegalAccessException.class, InvocationTargetException.class})
+  private void inject(MethodWithAnnotation<AppComponent> mwa, Object config) {
+    var method = mwa.getMethod();
+    var annotation = mwa.getAnnotation();
+    var componentName = annotation.name();
+    var componentType = method.getReturnType();
+    var parameters =
+        Arrays.stream(method.getParameterTypes())
+            .map(
+                requiredType -> {
+                  var parameter = getAppComponent(requiredType);
+                  if (parameter == null) {
+                    throw new ComponentNotFoundException(
+                        String.format(
+                            "not found component for the type %s", requiredType.getName()));
+                  }
+                  return parameter;
+                })
+            .toArray();
+    var component = method.invoke(config, parameters);
+
+    if (appComponentsByName.putIfAbsent(componentName, component) != null) {
+      throw new ComponentDuplicateException(
+          String.format("duplicate app component with the name %s", componentName));
+    }
+    if (appComponentsByType.putIfAbsent(componentType, component) != null) {
+      throw new ComponentDuplicateException(
+          String.format("duplicate app component with the type %s", componentType.getName()));
+    }
+  }
+
   @SneakyThrows
   private void processConfig(Class<?> configClass) {
     checkConfigClass(configClass);
 
     var config = configClass.getConstructor().newInstance();
-    var componentsByType = new HashMap<Class<?>, Object>();
     Arrays.stream(configClass.getDeclaredMethods())
+        .filter(method -> method.isAnnotationPresent(AppComponent.class))
         .map(
             method ->
                 new MethodWithAnnotation<>(
                     method, method.getDeclaredAnnotation(AppComponent.class)))
-        .filter(mwa -> mwa.getAnnotation() != null)
         .sorted(Comparator.comparingInt(mwa -> mwa.getAnnotation().order()))
-        .forEachOrdered(
-            new Consumer<>() {
-              @Override
-              @SneakyThrows({IllegalAccessException.class, InvocationTargetException.class})
-              public void accept(MethodWithAnnotation<AppComponent> mwa) {
-                var method = mwa.getMethod();
-                var annotation = mwa.getAnnotation();
-                var componentName = annotation.name();
-                var componentType = method.getReturnType();
-                var parameters =
-                    Arrays.stream(method.getParameterTypes())
-                        .map(
-                            requiredType -> {
-                              var parameter = componentsByType.get(requiredType);
-                              if (parameter == null) {
-                                throw new ComponentNotFound(
-                                    String.format(
-                                        "not found component for the type %s",
-                                        requiredType.getName()));
-                              }
-                              return parameter;
-                            })
-                        .toArray();
-                var component = method.invoke(config, parameters);
-
-                if (appComponentsByName.putIfAbsent(componentName, component) != null) {
-                  throw new DuplicateComponent(
-                      String.format("duplicate app component with the name %s", componentName));
-                }
-                if (componentsByType.putIfAbsent(componentType, component) != null) {
-                  throw new DuplicateComponent(
-                      String.format(
-                          "duplicate app component with the type %s", componentType.getName()));
-                }
-              }
-            });
-
-    appComponents.addAll(componentsByType.values());
+        .forEachOrdered(mwa -> inject(mwa, config));
   }
 
   private void checkConfigClass(Class<?> configClass) {
@@ -90,7 +85,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
   @Override
   @SuppressWarnings("unchecked")
   public <C> C getAppComponent(Class<C> componentClass) {
-    return (C) appComponents.stream().filter(componentClass::isInstance).findFirst().orElse(null);
+    return (C) appComponentsByType.get(componentClass);
   }
 
   @Override
