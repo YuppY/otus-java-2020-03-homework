@@ -1,16 +1,16 @@
-package ru.otus.hw.webserver.helpers;
+package ru.otus.hw.helpers;
+
+import lombok.experimental.UtilityClass;
 
 import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-public final class FileSystemHelper {
+@UtilityClass
+public class FileSystemHelper {
 
-    private FileSystemHelper() {
-    }
-
-    public static String localFileNameOrResourceNameToFullPath(String fileOrResourceName) {
+    public String localFileNameOrResourceNameToFullPath(String fileOrResourceName) {
         String path = null;
         File file = new File(String.format("./%s", fileOrResourceName));
         if (file.exists()) {

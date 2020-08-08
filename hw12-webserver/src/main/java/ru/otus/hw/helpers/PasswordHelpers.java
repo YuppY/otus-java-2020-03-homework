@@ -1,4 +1,4 @@
-package ru.otus.hw;
+package ru.otus.hw.helpers;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -9,7 +9,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @UtilityClass
-public class PasswordUtils {
+public class PasswordHelpers {
   private final int SALT_LENGTH = 512;
   private final SecureRandom RAND = new SecureRandom();
 

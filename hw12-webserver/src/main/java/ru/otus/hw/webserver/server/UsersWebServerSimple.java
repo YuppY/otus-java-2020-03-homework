@@ -8,7 +8,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ru.otus.hw.dao.UserDao;
-import ru.otus.hw.webserver.helpers.FileSystemHelper;
+import ru.otus.hw.helpers.FileSystemHelper;
 import ru.otus.hw.webserver.services.TemplateProcessor;
 import ru.otus.hw.webserver.servlet.UsersApiServlet;
 import ru.otus.hw.webserver.servlet.UsersServlet;
